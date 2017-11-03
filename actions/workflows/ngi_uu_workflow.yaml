@@ -15,7 +15,8 @@ workflows:
             - use_base_mask
             - bcl2fastq_additional_arguments
             - skip_archiving
-            - remove_previous_archive_dir  
+            - remove_previous_archive_dir
+            - force_projman
         output:
             output_the_whole_workflow_context: <% $ %>
         task-defaults:
@@ -124,10 +125,10 @@ workflows:
                     url: "http://<% $.host %>:<% $.bcl2fastq_service_port %>/api/1.0/start/<% $.runfolder_name %>"
                     timeout: 86400 # Wait for 24 h before timing out.
                     body: <% $.bcl2fastq_body %>
-                on-success: 
+                on-success:
                     - save_bcl2fastq_version
 
-            save_bcl2fastq_version: 
+            save_bcl2fastq_version:
                 action: core.local
                 input:
                     cmd: ssh <% $.host %> "echo <% task(run_bcl2fastq).result.result.response_from_start.response.bcl2fastq_version %> > <% $.runfolder %>/bcl2fastq_version"
@@ -233,7 +234,17 @@ workflows:
                     destination: <% $.summary_destination %>/<% $.current_year %>
                     include_file: /etc/arteria/misc/summary.rsync
                 on-success:
-                    - check_hosts_to_rsync_to
+                    - run_projman_filler
+
+            run_projman_filler:
+              action: core.remote
+              input:
+                hosts: <% $.summary_host %>
+                username: <% $.summary_user %>
+                cmd: projman_filler {% if force_projman == true %} --force {% endif %} <% $.runfolder_name %>
+                private_key: <% $.summary_host_key %>
+              on-success:
+                - check_hosts_to_rsync_to
 
             check_hosts_to_rsync_to:
                action: core.http
