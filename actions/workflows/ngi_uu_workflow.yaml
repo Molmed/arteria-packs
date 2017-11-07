@@ -241,7 +241,7 @@ workflows:
               input:
                 hosts: <% $.summary_host %>
                 username: <% $.summary_user %>
-                cmd: projman_filler {% if force_projman == true %} --force {% endif %} <% $.runfolder_name %>
+                cmd: projman_filler {% if force_projman == true %} --force {% endif %} <% $.summary_destination %>/<% $.current_year %>/<% $.runfolder_name %>
                 private_key: <% $.summary_host_key %>
               on-success:
                 - check_hosts_to_rsync_to
