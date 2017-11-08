@@ -16,7 +16,6 @@ workflows:
             - bcl2fastq_additional_arguments
             - skip_archiving
             - remove_previous_archive_dir
-            - force_projman
         output:
             output_the_whole_workflow_context: <% $ %>
         task-defaults:
@@ -46,6 +45,7 @@ workflows:
                 summary_host: <% task(get_config).result.result.summary_host %>
                 summary_user: <% task(get_config).result.result.summary_user %>
                 summary_destination: <% task(get_config).result.result.summary_destination %>
+                projman_install_location: <% task(get_config).result.result.projman_install_location %>
                 siswrap_service_port: <% task(get_config).result.result.siswrap_service_port %>
                 bcl2fastq_service_port: <% task(get_config).result.result.bcl2fastq_service_port %>
                 runfolder_service_port: <% task(get_config).result.result.runfolder_service_port %>
@@ -241,7 +241,7 @@ workflows:
               input:
                 hosts: <% $.summary_host %>
                 username: <% $.summary_user %>
-                cmd: projman_filler {% if force_projman == true %} --force {% endif %} <% $.summary_destination %>/<% $.current_year %>/<% $.runfolder_name %>
+                cmd: <% $.projman_install_location %> --force <% $.summary_destination %>/<% $.current_year %>/<% $.runfolder_name %>
                 private_key: <% $.summary_host_key %>
               on-success:
                 - check_hosts_to_rsync_to
