@@ -24,3 +24,4 @@
       cmd:
         default: 'export PROJMAN_DB={{projman_env_var}}; {{projman_install_location}} --force {{summary_destination}}/{{current_year}}/{{runfolder_name}}'
         secret: true
+
