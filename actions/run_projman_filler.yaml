@@ -16,7 +16,7 @@
         type: string
         required: true
       current_year:
-        type: string
+        type: integer
         required: true
       runfolder_name:
         type: string

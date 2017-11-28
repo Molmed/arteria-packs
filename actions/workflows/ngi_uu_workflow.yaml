@@ -46,8 +46,8 @@ workflows:
                 summary_user: <% task(get_config).result.result.summary_user %>
                 summary_destination: <% task(get_config).result.result.summary_destination %>
                 summary_host_key: <% task(get_config).result.result.summary_host_key %>
-                projman_install_location: <% task(get_config).result.result.projman_env_var %>
-                projman_env_var: <% task(get_config).result.result.projman_install_location %>
+                projman_install_location: <% task(get_config).result.result.projman_install_location %>
+                projman_env_var: <% task(get_config).result.result.projman_env_var %>
                 siswrap_service_port: <% task(get_config).result.result.siswrap_service_port %>
                 bcl2fastq_service_port: <% task(get_config).result.result.bcl2fastq_service_port %>
                 runfolder_service_port: <% task(get_config).result.result.runfolder_service_port %>
