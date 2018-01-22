@@ -1,0 +1,86 @@
+version: "2.0" # mistral version
+name: arteria-packs.archive_missing_files_irma
+description: Reuploads missing files from an archive on Irma to PDC with TSM
+
+workflows:
+    main:
+        type: direct
+        input:
+            - project
+        output:
+            output_the_whole_workflow_context: <% $ %>
+        task-defaults:
+            on-error:
+                - notify_failure_on_slack
+
+        tasks:
+            ### GENERAL TASKS START ###
+            note_workflow_repo_version:
+              action: core.local
+              input:
+                cmd: git rev-parse HEAD
+                cwd: /opt/stackstorm/packs/arteria-packs/
+              on-success:
+                - get_config
+
+            get_config:
+              action: arteria-packs.get_pack_config
+              publish:
+                irma_archive_upload_base_url: <% task(get_config).result.result.irma_archive_upload_base_url %>
+                irma_api_key: <% task(get_config).result.result.irma_api_key %>
+                archive_status_slack_channel: <% task(get_config).result.result.archive_status_slack_channel %>
+                send_mail_to: <% task(get_config).result.result.send_mail_to %>
+                archive_db_base_url: <% task(get_config).result.result.archive_db_base_url %>
+              on-success:
+                - upload_missing_files_to_pdc
+
+            ### GENERAL TASKS END ###
+
+            ### TSM ARCHIVE TO PDC START ###
+
+            upload_missing_files_to_pdc:
+                action: arteria-packs.poll_status-archive
+                input:
+                  url: <% $.irma_archive_upload_base_url %>/reupload/<% $.project %>_archive?apikey=<% $.irma_api_key %>
+                  verify_ssl_cert: True
+                  irma_mode: True
+                  timeout: 86400 # 1d worst-case timeout
+                publish:
+                  archive_path: <% task(upload_missing_files_to_pdc).result.result.response_from_start.response.archive_path %>
+                  archive_description: <% task(upload_missing_files_to_pdc).result.result.response_from_start.response.archive_description %>
+                  archive_host: <% task(upload_missing_files_to_pdc).result.result.response_from_start.response.archive_host %>
+                on-success:
+                  - mark_upload_ok_in_db
+
+            mark_upload_ok_in_db:
+                action: core.http
+                input:
+                  url: <% $.archive_db_base_url %>/upload
+                  body: '{ "path":  "<% $.archive_path %>", "description": "<% $.archive_description %>", "host": "<% $.archive_host %>" }'
+                  method: "POST"
+                  timeout: 60
+                on-success:
+                  - notify_finished
+
+            ## END TSM ARCHIVE TO PDC ##
+
+            ## NOTIFIER START ###
+
+            notify_finished:
+                action: core.sendmail
+                input:
+                    to: <% $.send_mail_to %>
+                    subject: "'[ARTERIA] - Finished archiving missing files for archive <% $.project %>_archive on Irma'"
+                    body: "Finished archiving missing files for <% $.project %>_archive on Irma."
+
+            notify_failure_on_slack:
+              action: arteria-packs.post_to_slack
+              input:
+                user: 'I, Archivian'
+                emoji_icon: ':robot_face:'
+                channel: <% $.archive_status_slack_channel %>
+                message: 'Unfortunately an error occurred when trying to archive missing files for `<% $.project %>`. You can see more details by running: `st2 execution get <% env().st2_execution_id %>`'
+              on-complete:
+                - fail
+
+            ### NOTIFIER END ###

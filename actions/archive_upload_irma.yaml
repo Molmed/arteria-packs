@@ -1,0 +1,26 @@
+---
+name: archive_upload_irma
+description: >
+  Archives a project on Irma to PDC with TSM
+enabled: true
+runner_type: mistral-v2
+entry_point: workflows/archive_upload_irma.yaml
+pack: arteria-packs
+parameters:
+  context:
+    default: {}
+    immutable: true
+    type: object
+  workflow:
+    default: arteria-packs.archive_upload_irma
+    immutable: true
+    type: string
+  project:
+    description: 'Project ID to archive'
+    required: true
+    type: string
+  remove_previous_archive:
+    description: 'Set to true to remove previous archive'
+    required: true
+    type: boolean
+    default: false

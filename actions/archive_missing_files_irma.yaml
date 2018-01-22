@@ -1,0 +1,21 @@
+---
+name: archive_missing_files_irma
+description: >
+  Archives missing files from a project on Irma to PDC
+enabled: true
+runner_type: mistral-v2
+entry_point: workflows/archive_missing_files_irma.yaml
+pack: arteria-packs
+parameters:
+  context:
+    default: {}
+    immutable: true
+    type: object
+  workflow:
+    default: arteria-packs.archive_missing_files_irma
+    immutable: true
+    type: string
+  project:
+    description: 'Name of project to re-upload'
+    required: true
+    type: string

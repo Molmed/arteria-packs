@@ -1,0 +1,105 @@
+version: "2.0" # mistral version
+name: arteria-packs.archive_upload
+description: Archives a runfolder to PDC with TSM
+
+workflows:
+    main:
+        type: direct
+        input:
+            - runfolder
+            - host
+            - remove_previous_archive
+        output:
+            output_the_whole_workflow_context: <% $ %>
+        task-defaults:
+          on-error:
+            - notify_failure_on_slack
+
+        tasks:
+            ### GENERAL TASKS START ###
+            note_workflow_repo_version:
+              action: core.local
+              input:
+                cmd: git rev-parse HEAD
+                cwd: /opt/stackstorm/packs/arteria-packs/
+              on-success:
+                - get_config
+
+            get_config:
+              action: arteria-packs.get_pack_config
+              publish:
+                archive_upload_port: <% task(get_config).result.result.archive_upload_service_port %>
+                archive_status_slack_channel: <% task(get_config).result.result.archive_status_slack_channel %>
+                archive_db_base_url: <% task(get_config).result.result.archive_db_base_url %>
+              on-success:
+                - create_archive_dir
+
+            ### GENERAL TASKS END ###
+
+            ### TSM ARCHIVE TO PDC START ###
+
+            create_archive_dir:
+              action: core.http
+              input:
+                url: http://<% $.host %>:<% $.archive_upload_port %>/api/1.0/create_dir/<% $.runfolder %>
+                body: '{"remove": "<% $.remove_previous_archive %>"}'
+                method: "POST"
+              on-success:
+                - compress_tsm_archive
+
+            compress_tsm_archive:
+               action: core.http
+               input:
+                 url: http://<% $.host %>:<% $.archive_upload_port %>/api/1.0/compress_archive/<% $.runfolder %>_archive
+                 method: "POST"
+                 timeout: 3600 # 1 hr timeout
+               on-success:
+                 - generate_checksums
+
+            generate_checksums:
+                action: arteria-packs.poll_status-archive
+                input:
+                  url: http://<% $.host %>:<% $.archive_upload_port %>/api/1.0/gen_checksums/<% $.runfolder %>_archive
+                  verify_ssl_cert: True
+                  irma_mode: False
+                  timeout: 86400 # 24 h timeout
+                on-success:
+                  - upload_archive
+
+            upload_archive:
+                action: arteria-packs.poll_status-archive
+                input:
+                  url: http://<% $.host %>:<% $.archive_upload_port %>/api/1.0/upload/<% $.runfolder %>_archive
+                  verify_ssl_cert: True
+                  irma_mode: False
+                  timeout: 86400 # 1d worst-case timeout
+                publish:
+                  archive_path: <% task(upload_archive).result.result.response_from_start.response.archive_path %>
+                  archive_description: <% task(upload_archive).result.result.response_from_start.response.archive_description %>
+                  archive_host: <% task(upload_archive).result.result.response_from_start.response.archive_host %>
+                on-success:
+                  - mark_upload_ok_in_db
+
+            mark_upload_ok_in_db:
+                action: core.http
+                input:
+                  url: <% $.archive_db_base_url %>/upload
+                  body: '{ "path":  "<% $.archive_path %>", "description": "<% $.archive_description %>", "host": "<% $.archive_host %>" }'
+                  method: "POST"
+                  timeout: 60
+
+            ### END TSM ARCHIVE TO PDC ###
+
+            ## NOTIFIER START ###
+
+            notify_failure_on_slack:
+               action: arteria-packs.post_to_slack
+               input:
+                 user: 'I, Archivian'
+                 emoji_icon: ':robot_face:'
+                 channel: <% $.archive_status_slack_channel %>
+                 message: 'Unfortunately an error occurred when trying to archive `<% $.runfolder %>`. You can see more details by running: `st2 execution get <% env().st2_execution_id %>`'
+               on-complete:
+                 - fail
+
+            ### NOTIFIER END ###
