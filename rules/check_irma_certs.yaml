@@ -1,6 +1,6 @@
 ---
-name: "snpseq-packs.check_irma_certs"
-pack: "snpseq-packs"
+name: "snpseq_packs.check_irma_certs"
+pack: "snpseq_packs"
 description: "Warn if Irma certs expire soon"
 enabled: true
 
@@ -13,5 +13,5 @@ trigger:
       second: 0
 
 action:
-    ref: "snpseq-packs.check_irma_certs"
+    ref: "snpseq_packs.check_irma_certs"
 

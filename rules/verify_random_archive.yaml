@@ -1,6 +1,6 @@
 ---
-name: "snpseq-packs.verify_random_archive"
-pack: "snpseq-packs"
+name: "snpseq_packs.verify_random_archive"
+pack: "snpseq_packs"
 description: "Verifies MD5sums for a randomly chosen, uploaded and unverified archive."
 enabled: true
 
@@ -14,5 +14,5 @@ trigger:
       second: 0
 
 action:
-    ref: "snpseq-packs.archive_verify_random"
+    ref: "snpseq_packs.archive_verify_random"
 

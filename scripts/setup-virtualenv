@@ -1,1 +1,1 @@
-st2 run packs.setup_virtualenv packs=snpseq-packs
+st2 run packs.setup_virtualenv packs=snpseq_packs

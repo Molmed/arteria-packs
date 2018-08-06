@@ -6,7 +6,7 @@ import os
 
 class RunfolderSensor(PollingSensor):
 
-    def __init__(self, sensor_service, config=None, poll_interval=None, trigger='snpseq-packs.runfolder_ready'):
+    def __init__(self, sensor_service, config=None, poll_interval=None, trigger='snpseq_packs.runfolder_ready'):
         super(RunfolderSensor, self).__init__(sensor_service=sensor_service,
                                               config=config,
                                               poll_interval=poll_interval)
@@ -73,10 +73,10 @@ class RunfolderSensor(PollingSensor):
         self._sensor_service.dispatch(trigger=trigger, payload=payload, trace_tag=runfolder_name)
 
     def _load_config(self):
-        config_path = "/opt/stackstorm/packs/snpseq-packs/config.yaml"
+        config_path = "/opt/stackstorm/packs/snpseq_packs/config.yaml"
         with open(config_path) as stream:
             self.config = yaml.load(stream)
             self._infolog("Loaded configuration from {}".format(config_path))
 
     def _infolog(self, msg):
-        self._logger.info("[snpseq-packs." + self.__class__.__name__ + "] " + msg)
+        self._logger.info("[snpseq_packs." + self.__class__.__name__ + "] " + msg)

@@ -4,13 +4,13 @@ description: Downloads the ngi pipeline reports to the summary host
 enabled: true
 runner_type: mistral-v2
 entry_point: workflows/gather_ngi_pipeline_reports.yaml
-pack: snpseq-packs
+pack: snpseq_packs
 parameters:
   context:
     default: {}
     immutable: true
     type: object
   workflow:
-    default: snpseq-packs.gather_ngi_pipeline_reports
+    default: snpseq_packs.gather_ngi_pipeline_reports
     immutable: true
     type: string

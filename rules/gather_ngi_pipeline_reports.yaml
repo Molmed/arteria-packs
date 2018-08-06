@@ -1,6 +1,6 @@
 ---
-name: "snpseq-packs.gather_ngi_pipeline_reports"
-pack: "snpseq-packs"
+name: "snpseq_packs.gather_ngi_pipeline_reports"
+pack: "snpseq_packs"
 description: "Attempts to synchronize project reports from the ngi_pipeline at the set intervals."
 enabled: true
 
@@ -11,6 +11,6 @@ trigger:
       delta: 6
 
 action:
-    ref: "snpseq-packs.gather_ngi_pipeline_reports"
+    ref: "snpseq_packs.gather_ngi_pipeline_reports"
 
 

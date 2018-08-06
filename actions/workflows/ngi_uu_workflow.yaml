@@ -1,5 +1,5 @@
 version: "2.0" # mistral version
-name: snpseq-packs.ngi_uu_workflow
+name: snpseq_packs.ngi_uu_workflow
 description: The ngi workflow, from sequencer to remote system...
 
 workflows:
@@ -30,12 +30,12 @@ workflows:
               action: core.local
               input:
                 cmd: git rev-parse HEAD
-                cwd: /opt/stackstorm/packs/snpseq-packs/
+                cwd: /opt/stackstorm/packs/snpseq_packs/
               on-success:
                 - get_config
 
             get_config:
-              action: snpseq-packs.get_pack_config
+              action: snpseq_packs.get_pack_config
               publish:
                 remote_host: <% task(get_config).result.result.remote_host %>
                 remote_user: <% task(get_config).result.result.remote_user%>
@@ -83,7 +83,7 @@ workflows:
                 - get_flowcell_name
 
             get_flowcell_name:
-                action: snpseq-packs.get_flowcell_from_runfolder_name
+                action: snpseq_packs.get_flowcell_from_runfolder_name
                 input:
                     runfolder_name: <% $.runfolder_name %>
                 publish:
@@ -96,7 +96,7 @@ workflows:
             ### DEMULTIPLEX START ###
 
             download_samplesheet_mount:
-                action: snpseq-packs.download_samplesheet_mount
+                action: snpseq_packs.download_samplesheet_mount
                 input:
                     flowcell_name: <% $.flowcell_name %>
                     samplesheet_path: <% $.samplesheet_fallback_path %>
@@ -108,7 +108,7 @@ workflows:
                     - construct_bcl2fastq_body
 
             download_samplesheet_clarity:
-                action: snpseq-packs.download_samplesheet_clarity
+                action: snpseq_packs.download_samplesheet_clarity
                 input:
                     flowcell_name: <% $.flowcell_name %>
                 
@@ -122,7 +122,7 @@ workflows:
             # bcl2fastq-ws, we remove any empty keys from
             # this body.
             construct_bcl2fastq_body:
-                action: snpseq-packs.parse_bcl2fastq_args
+                action: snpseq_packs.parse_bcl2fastq_args
                 input:
                     samplesheet: "<% $.samplesheet_string %>"
                     bcl2fastq_version: "<% $.bcl2fastq_version %>"
@@ -137,7 +137,7 @@ workflows:
                     - run_bcl2fastq
 
             run_bcl2fastq:
-                action: snpseq-packs.poll_status
+                action: snpseq_packs.poll_status
                 input:
                     url: "http://<% $.host %>:<% $.bcl2fastq_service_port %>/api/1.0/start/<% $.runfolder_name %>"
                     timeout: 86400 # Wait for 24 h before timing out.
@@ -155,7 +155,7 @@ workflows:
             ## DEMULTIPLEX END ###
             ### CHECKQC START ###
             run_checkqc:
-              action: snpseq-packs.run_checkqc
+              action: snpseq_packs.run_checkqc
               input:
                 url: "http://<% $.host %>:<% $.checkqc_service_port %>/qc/<% $.runfolder_name %>"
                 ignore_result: <% $.ignore_qc_result %>
@@ -175,7 +175,7 @@ workflows:
 
             ### CHECK INDICES START###
             run_sisyphus_check_indices:
-                action: snpseq-packs.poll_status
+                action: snpseq_packs.poll_status
                 input:
                     url: "http://<% $.host %>:<% $.siswrap_service_port %>/api/1.0/checkindices/run/<% $.runfolder_name %>"
                     body:
@@ -197,7 +197,7 @@ workflows:
                 - rsync_to_summary_host
 
             rsync_to_summary_host:
-                action: snpseq-packs.rsync
+                action: snpseq_packs.rsync
                 input:
                     source: <% $.runfolder %>
                     source_host: <% $.host %>
@@ -210,7 +210,7 @@ workflows:
                     - run_projman_filler
 
             run_projman_filler:
-              action: snpseq-packs.run_projman_filler
+              action: snpseq_packs.run_projman_filler
               input:
                 hosts: <% $.summary_host %>
                 username: <% $.summary_user %>
@@ -224,7 +224,7 @@ workflows:
                 - rsync_to_irma
 
             rsync_to_irma:
-                action: snpseq-packs.sync_workflow
+                action: snpseq_packs.sync_workflow
                 input:
                     runfolder: <% $.runfolder %>
                     runfolder_name: <% $.runfolder_name %>
@@ -239,7 +239,7 @@ workflows:
                   - irma_check_md5sums
 
             irma_check_md5sums:
-                action: snpseq-packs.poll_status
+                action: snpseq_packs.poll_status
                 input:
                     url: <% $.irma_checksum_base_url %>/start/<% $.runfolder_name %>?apikey=<% $.irma_api_key %>
                     body:
@@ -253,7 +253,7 @@ workflows:
 
             ### START AEACUS REPORT STEPS ###
             irma_run_aeacus_stats:
-               action: snpseq-packs.poll_status
+               action: snpseq_packs.poll_status
                input:
                     url: <% $.irma_siswrap_base_url %>/aeacusstats/run/<% $.runfolder_name %>?apikey=<% $.irma_api_key %>
                     body:
@@ -264,7 +264,7 @@ workflows:
                  - irma_run_aeacus_reports
 
             irma_run_aeacus_reports:
-               action: snpseq-packs.poll_status
+               action: snpseq_packs.poll_status
                input:
                   url: <% $.irma_siswrap_base_url %>/aeacusreports/run/<% $.runfolder_name %>?apikey=<% $.irma_api_key %>
                   body:
@@ -289,7 +289,7 @@ workflows:
             ## START TSM ARCHIVE TO PDC ##
 
             upload_runfolder_to_pdc:
-                action: snpseq-packs.archive_upload
+                action: snpseq_packs.archive_upload
                 input:
                     runfolder: <% $.runfolder_name %>
                     host: <% $.host %>

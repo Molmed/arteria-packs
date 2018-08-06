@@ -1,12 +1,12 @@
 ---
 
-name: "snpseq-packs.mv_runfolders_from_incoming_to_processing"
-pack: "snpseq-packs"
+name: "snpseq_packs.mv_runfolders_from_incoming_to_processing"
+pack: "snpseq_packs"
 description: "Checks the incoming runfolders service for runfolders that have been uploaded completely and moves them to the processing folder"
 enabled: true
 
 trigger:
-    type: "snpseq-packs.incoming_ready"
+    type: "snpseq_packs.incoming_ready"
 
 action:
     ref: "linux.mv"

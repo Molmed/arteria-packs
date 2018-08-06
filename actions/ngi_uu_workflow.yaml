@@ -7,14 +7,14 @@ description: >
 enabled: true
 runner_type: mistral-v2
 entry_point: workflows/ngi_uu_workflow.yaml
-pack: snpseq-packs
+pack: snpseq_packs
 parameters:
   context:
     default: {}
     immutable: true
     type: object
   workflow:
-    default: snpseq-packs.ngi_uu_workflow
+    default: snpseq_packs.ngi_uu_workflow
     immutable: true
     type: string
   host:

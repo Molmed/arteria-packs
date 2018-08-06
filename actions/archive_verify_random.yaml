@@ -5,13 +5,13 @@ description: >
 enabled: true
 runner_type: mistral-v2
 entry_point: workflows/archive_verify_random.yaml
-pack: snpseq-packs
+pack: snpseq_packs
 parameters:
   context:
     default: {}
     immutable: true
     type: object
   workflow:
-    default: snpseq-packs.archive_verify_random
+    default: snpseq_packs.archive_verify_random
     immutable: true
     type: string

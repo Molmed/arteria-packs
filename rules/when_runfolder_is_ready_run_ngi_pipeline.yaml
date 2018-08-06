@@ -1,13 +1,13 @@
 ---
-name: "snpseq-packs.when_runfolder_is_ready_run_ngi_pipeline"
+name: "snpseq_packs.when_runfolder_is_ready_run_ngi_pipeline"
 description: "Fires of the NGI pipeline when a runfolder is ready"
 enabled: true
 
 trigger:
-    type: "snpseq-packs.runfolder_ready"
+    type: "snpseq_packs.runfolder_ready"
 
 action:
-    ref: "snpseq-packs.ngi_uu_workflow"
+    ref: "snpseq_packs.ngi_uu_workflow"
     parameters:
         host: "{{trigger.host}}"
         runfolder: "{{trigger.runfolder}}"

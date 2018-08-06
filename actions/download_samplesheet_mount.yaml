@@ -4,7 +4,7 @@ runner_type: "python-script"
 description: "Reads samplesheets from a mount on the Stackstorm server as fallback to the Clarity LIMS, keyed on flowcell id"
 enabled: true
 entry_point: "download_samplesheet_mount.py"
-pack: "snpseq-packs"
+pack: "snpseq_packs"
 parameters:
   flowcell_name:
     type: "string"

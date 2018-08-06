@@ -1,5 +1,5 @@
 version: "2.0" # mistral version
-name: snpseq-packs.sync_workflow
+name: snpseq_packs.sync_workflow
 description: Syncs a run for the source host to the remote_host.
 
 workflows:
@@ -24,14 +24,14 @@ workflows:
               action: core.local
               input:
                 cmd: git rev-parse HEAD
-                cwd: /opt/stackstorm/packs/snpseq-packs/
+                cwd: /opt/stackstorm/packs/snpseq_packs/
               on-success:
                  - create_md5sums_for_files_to_transfer
             ### GENERAL TASKS END ###
 
             ### TRANSFER FILES START ###
             create_md5sums_for_files_to_transfer:
-                action: snpseq-packs.create_sis_style_checksums
+                action: snpseq_packs.create_sis_style_checksums
                 input:
                     source: <% $.runfolder %>
                     host: <% $.source_host %>
@@ -43,7 +43,7 @@ workflows:
                     - rsync_to_destination
 
             rsync_to_destination:
-                action: snpseq-packs.rsync
+                action: snpseq_packs.rsync
                 input:
                     source: <% $.runfolder %>
                     source_host: <% $.source_host %>
@@ -56,7 +56,7 @@ workflows:
                     - rsync_md5sums
 
             rsync_md5sums:
-                action: snpseq-packs.rsync
+                action: snpseq_packs.rsync
                 input:
                     source: <% $.runfolder %>/MD5
                     source_host: <% $.source_host %>

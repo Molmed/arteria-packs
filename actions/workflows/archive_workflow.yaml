@@ -1,5 +1,5 @@
 version: "2.0" # mistral version
-name: snpseq-packs.archive_workflow
+name: snpseq_packs.archive_workflow
 description: Archives a runfolder to PDC with TSM
 
 workflows:
@@ -18,12 +18,12 @@ workflows:
               action: core.local
               input:
                 cmd: git rev-parse HEAD
-                cwd: /opt/stackstorm/packs/snpseq-packs/
+                cwd: /opt/stackstorm/packs/snpseq_packs/
               on-success:
                 - get_config
 
             get_config:
-              action: snpseq-packs.get_pack_config
+              action: snpseq_packs.get_pack_config
               publish:
                 archive_excludes: <% task(get_config).result.result.archive_excludes %>
                 archive_fastq_threshold: <% task(get_config).result.result.archive_fastq_threshold %>
@@ -36,7 +36,7 @@ workflows:
 
             ### TRANSFER FILES START ###
             create_archive_dir: 
-              action: snpseq-packs.create_archive_dir
+              action: snpseq_packs.create_archive_dir
               input: 
                 host: <% $.host %>
                 runfolder: <% $.runfolder %>
@@ -49,7 +49,7 @@ workflows:
             
             # Will compress some of the files in the archive. Script will fail if gziped archive already exists. 
             compress_tsm_archive:
-               action: snpseq-packs.compress_archive_package
+               action: snpseq_packs.compress_archive_package
                input:
                  host: <% $.host %>
                  runfolder: <% $.runfolder %>_archive

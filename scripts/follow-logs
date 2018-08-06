@@ -1,6 +1,6 @@
 #!/bin/bash
 what=$1
 if [ "$what" == "" ]; then
-    what="snpseq-packs"
+    what="snpseq_packs"
 fi
 tail -f /var/log/st2/* | grep -i "$what"

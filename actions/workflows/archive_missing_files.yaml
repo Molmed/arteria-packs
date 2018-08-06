@@ -1,5 +1,5 @@
 version: "2.0" # mistral version
-name: snpseq-packs.archive_missing_files
+name: snpseq_packs.archive_missing_files
 description: Reuploads missing files from an archive to PDC with TSM
 
 workflows:
@@ -20,12 +20,12 @@ workflows:
               action: core.local
               input:
                 cmd: git rev-parse HEAD
-                cwd: /opt/stackstorm/packs/snpseq-packs/
+                cwd: /opt/stackstorm/packs/snpseq_packs/
               on-success:
                 - get_config
 
             get_config:
-              action: snpseq-packs.get_pack_config
+              action: snpseq_packs.get_pack_config
               publish:
                 archive_upload_port: <% task(get_config).result.result.archive_upload_service_port %>
                 archive_status_slack_channel: <% task(get_config).result.result.archive_status_slack_channel %>
@@ -39,7 +39,7 @@ workflows:
             ### TSM ARCHIVE TO PDC START ###
 
             upload_missing_files_to_pdc:
-                action: snpseq-packs.poll_status-archive
+                action: snpseq_packs.poll_status-archive
                 input:
                   url: http://<% $.host %>:<% $.archive_upload_port %>/api/1.0/reupload/<% $.runfolder %>_archive
                   verify_ssl_cert: True
@@ -74,7 +74,7 @@ workflows:
                     body: "Finished archiving missing files for <% $.runfolder %>_archive on <% $.host %>."
 
             notify_failure_on_slack:
-               action: snpseq-packs.post_to_slack
+               action: snpseq_packs.post_to_slack
                input:
                  user: 'I, Archivian'
                  emoji_icon: ':robot_face:'

@@ -1,6 +1,6 @@
 ---
-name: "snpseq-packs.charon_project_status"
-pack: "snpseq-packs"
+name: "snpseq_packs.charon_project_status"
+pack: "snpseq_packs"
 description: "Attempts to get the status OPEN projects in Charon and posts them to a Slack channel"
 enabled: true
 
@@ -14,6 +14,6 @@ trigger:
       second: 0
 
 action:
-    ref: "snpseq-packs.charon_project_status"
+    ref: "snpseq_packs.charon_project_status"
 
 

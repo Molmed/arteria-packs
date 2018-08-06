@@ -1,5 +1,5 @@
 version: "2.0" # mistral version
-name: snpseq-packs.gather_ngi_pipeline_reports
+name: snpseq_packs.gather_ngi_pipeline_reports
 description: Downloads ngi pipeline reports from e.g. irma to our summary host.
 
 workflows:
@@ -11,12 +11,12 @@ workflows:
               action: core.local
               input:
                 cmd: git rev-parse HEAD
-                cwd: /opt/stackstorm/packs/snpseq-packs/
+                cwd: /opt/stackstorm/packs/snpseq_packs/
               on-success:
                   - get_config
 
             get_config:
-              action: snpseq-packs.get_pack_config
+              action: snpseq_packs.get_pack_config
               publish:
                 summary_host: <% task(get_config).result.result.summary_host %>
                 summary_user: <% task(get_config).result.result.summary_user %>

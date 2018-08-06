@@ -1,5 +1,5 @@
 version: "2.0" # mistral version
-name: snpseq-packs.archive_verify_random
+name: snpseq_packs.archive_verify_random
 description: Verify a randomly picked runfolder archive that was uploaded to PDC. Supposed to be run each week. Picks a runfolder that has not been verified previously, and was uploaded within the interval [1 week ago, yesterday].
 
 workflows:
@@ -17,12 +17,12 @@ workflows:
               action: core.local
               input:
                 cmd: git rev-parse HEAD
-                cwd: /opt/stackstorm/packs/snpseq-packs/
+                cwd: /opt/stackstorm/packs/snpseq_packs/
               on-success:
                 - get_config
 
             get_config:
-              action: snpseq-packs.get_pack_config
+              action: snpseq_packs.get_pack_config
               publish:
                 archive_status_slack_channel: <% task(get_config).result.result.archive_status_slack_channel %>
                 archive_db_base_url: <% task(get_config).result.result.archive_db_base_url %>
@@ -51,7 +51,7 @@ workflows:
                 - verify_archive
 
             verify_archive:
-              action: snpseq-packs.archive_verify_specific
+              action: snpseq_packs.archive_verify_specific
               input:
                 archive: <% $.archive_name %>
                 host: <% $.archive_host %>
@@ -63,7 +63,7 @@ workflows:
             ## NOTIFIER START ###
 
             notify_failure_on_slack:
-               action: snpseq-packs.post_to_slack
+               action: snpseq_packs.post_to_slack
                input:
                  user: 'I, Archivian'
                  emoji_icon: ':robot_face:'

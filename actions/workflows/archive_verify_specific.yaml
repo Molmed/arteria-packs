@@ -1,5 +1,5 @@
 version: "2.0" # mistral version
-name: snpseq-packs.archive_verify_specific
+name: snpseq_packs.archive_verify_specific
 description: Verify a specific runfolder archive that was uploaded to PDC
 
 workflows:
@@ -22,12 +22,12 @@ workflows:
               action: core.local
               input:
                 cmd: git rev-parse HEAD
-                cwd: /opt/stackstorm/packs/snpseq-packs/
+                cwd: /opt/stackstorm/packs/snpseq_packs/
               on-success:
                 - get_config
 
             get_config:
-              action: snpseq-packs.get_pack_config
+              action: snpseq_packs.get_pack_config
               publish:
                 archive_verify_base_url: <% task(get_config).result.result.archive_verify_base_url %>
                 archive_status_slack_channel: <% task(get_config).result.result.archive_status_slack_channel %>
@@ -40,7 +40,7 @@ workflows:
             ### TSM ARCHIVE VERIFY START ###
 
             construct_poller_body:
-              action: snpseq-packs.parse_archive_verify_args
+              action: snpseq_packs.parse_archive_verify_args
               input:
                 archive: <% $.archive %>
                 description: <% $.description %>
@@ -52,7 +52,7 @@ workflows:
                 - verify_archive_dir
 
             verify_archive_dir:
-              action: snpseq-packs.poll_status-archive
+              action: snpseq_packs.poll_status-archive
               input:
                 url: <% $.archive_verify_base_url %>/verify
                 body: <% $.verify_body %>
@@ -75,7 +75,7 @@ workflows:
                 - notify_success_on_slack
 
             notify_success_on_slack:
-              action: snpseq-packs.post_to_slack
+              action: snpseq_packs.post_to_slack
               input:
                 user: "I, Archivian"
                 emoji_icon: ":robot_face:"
@@ -87,7 +87,7 @@ workflows:
             ## NOTIFIER START ###
 
             notify_failure_on_slack:
-              action: snpseq-packs.post_to_slack
+              action: snpseq_packs.post_to_slack
               input:
                 user: 'I, Archivian'
                 emoji_icon: ':robot_face:'

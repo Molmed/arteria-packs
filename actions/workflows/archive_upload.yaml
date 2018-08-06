@@ -1,5 +1,5 @@
 version: "2.0" # mistral version
-name: snpseq-packs.archive_upload
+name: snpseq_packs.archive_upload
 description: Archives a runfolder to PDC with TSM
 
 workflows:
@@ -21,12 +21,12 @@ workflows:
               action: core.local
               input:
                 cmd: git rev-parse HEAD
-                cwd: /opt/stackstorm/packs/snpseq-packs/
+                cwd: /opt/stackstorm/packs/snpseq_packs/
               on-success:
                 - get_config
 
             get_config:
-              action: snpseq-packs.get_pack_config
+              action: snpseq_packs.get_pack_config
               publish:
                 archive_upload_port: <% task(get_config).result.result.archive_upload_service_port %>
                 archive_status_slack_channel: <% task(get_config).result.result.archive_status_slack_channel %>
@@ -58,7 +58,7 @@ workflows:
                  - generate_checksums
 
             generate_checksums:
-                action: snpseq-packs.poll_status-archive
+                action: snpseq_packs.poll_status-archive
                 input:
                   url: http://<% $.host %>:<% $.archive_upload_port %>/api/1.0/gen_checksums/<% $.runfolder %>_archive
                   verify_ssl_cert: True
@@ -68,7 +68,7 @@ workflows:
                   - upload_archive
 
             upload_archive:
-                action: snpseq-packs.poll_status-archive
+                action: snpseq_packs.poll_status-archive
                 input:
                   url: http://<% $.host %>:<% $.archive_upload_port %>/api/1.0/upload/<% $.runfolder %>_archive
                   verify_ssl_cert: True
@@ -94,7 +94,7 @@ workflows:
             ## NOTIFIER START ###
 
             notify_failure_on_slack:
-               action: snpseq-packs.post_to_slack
+               action: snpseq_packs.post_to_slack
                input:
                  user: 'I, Archivian'
                  emoji_icon: ':robot_face:'

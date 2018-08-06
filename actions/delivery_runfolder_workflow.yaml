@@ -4,14 +4,14 @@ description: Deliver a runfolder
 enabled: true
 runner_type: mistral-v2
 entry_point: workflows/delivery_runfolder_workflow.yaml
-pack: snpseq-packs
+pack: snpseq_packs
 parameters:
   context:
     default: {}
     immutable: true
     type: object
   workflow:
-    default: snpseq-packs.delivery_runfolder_workflow
+    default: snpseq_packs.delivery_runfolder_workflow
     immutable: true
     type: string
   runfolder_name:

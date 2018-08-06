@@ -4,7 +4,7 @@ description: Set the delivery status of a set of project/samples in Charon.
 enabled: true
 runner_type: run-python
 entry_point: lib/charon.py
-pack: snpseq-packs
+pack: snpseq_packs
 parameters:
     action:
       type: string
